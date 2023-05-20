@@ -26,6 +26,9 @@ func TestProvider(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
+	workspace := os.Getenv("BITBUCKET_WORKSPACE")
+	assert.NotEqual(t, "", workspace, "BITBUCKET_WORKSPACE must be set for acceptance tests")
+
 	username := os.Getenv("BITBUCKET_USERNAME")
 	assert.NotEqual(t, "", username, "BITBUCKET_USERNAME must be set for acceptance tests")
 
