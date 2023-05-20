@@ -103,6 +103,50 @@ func resourceBitbucketDeploymentRead(ctx context.Context, resourceData *schema.R
 	return nil
 }
 
+func resourceBitbucketDeploymentReadByNameOrId(ctx context.Context, resourceData *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	if resourceData.Get("name") != nil {
+		return resourceBitbucketDeploymentRead(ctx, resourceData, meta)
+	}
+
+	if resourceData.Get("id") != nil {
+		return resourceBitbucketDeploymentReadByName(ctx, resourceData, meta)
+	}
+
+	return diag.Errorf("Either name or id must be provided")
+}
+
+func resourceBitbucketDeploymentReadByName(ctx context.Context, resourceData *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*Clients).V2
+
+	deployments, err := client.Repositories.Repository.ListEnvironments(
+		&gobb.RepositoryEnvironmentsOptions{
+			Owner:    resourceData.Get("workspace").(string),
+			RepoSlug: resourceData.Get("repository").(string),
+		},
+	)
+	if err != nil {
+		return diag.FromErr(fmt.Errorf("unable to get deployment variable with error: %s", err))
+	}
+
+	var deployment *gobb.Environment
+	for _, item := range deployments.Environments {
+		if item.Name == resourceData.Get("name").(string) {
+			deployment = &item
+			break
+		}
+	}
+
+	if deployment == nil {
+		return diag.FromErr(errors.New("unable to get deployment, Bitbucket API did not return it"))
+	}
+
+	_ = resourceData.Set("name", deployment.Name)
+	_ = resourceData.Set("environment", gobb.RepositoryEnvironmentTypeOption(deployment.Rank).String())
+	resourceData.SetId(deployment.Uuid)
+
+	return nil
+}
+
 func resourceBitbucketDeploymentDelete(ctx context.Context, resourceData *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Clients).V2
 
