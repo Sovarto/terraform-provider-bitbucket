@@ -167,9 +167,9 @@ func resourceBitbucketPipelineVariableImport(ctx context.Context, resourceData *
 }
 
 func validateRepositoryVariableName(val interface{}, path cty.Path) diag.Diagnostics {
-	match, _ := regexp.MatchString("^([a-zA-Z])[a-zA-Z0-9_]+$", val.(string))
+	match, _ := regexp.MatchString("^([a-zA-Z_])[a-zA-Z0-9_]+$", val.(string))
 	if !match {
-		return diag.FromErr(fmt.Errorf("variable name must consist of only ASCII letters, numbers, underscores & not begin with a number (a-z, 0-9, _)"))
+		return diag.FromErr(fmt.Errorf("variable name must consist of only ASCII letters, numbers, underscores & not begin with a number (a-z, 0-9)"))
 	}
 
 	return diag.Diagnostics{}
