@@ -11,12 +11,12 @@ func dataSourceBitbucketDeployment() *schema.Resource {
 			"id": {
 				Description: "The ID of the deployment.",
 				Type:        schema.TypeString,
-				Required:    false,
+				Optional:    true,
 			},
 			"name": {
 				Description: "The name of the deployment environment.",
 				Type:        schema.TypeString,
-				Required:    false,
+				Optional:    true,
 			},
 			"workspace": {
 				Description: "The slug or UUID (including the enclosing `{}`) of the workspace.",
