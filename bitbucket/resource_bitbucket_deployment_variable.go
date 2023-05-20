@@ -90,7 +90,7 @@ func resourceBitbucketDeploymentVariableRead(ctx context.Context, resourceData *
 	client := meta.(*Clients).V2
 
 	// Artificial sleep due to Bitbucket's API taking time to return newly created variables :(
-	time.Sleep(3 * time.Second)
+	time.Sleep(7 * time.Second)
 
 	deploymentVariables, err := client.Repositories.Repository.ListDeploymentVariables(
 		&gobb.RepositoryDeploymentVariablesOptions{
