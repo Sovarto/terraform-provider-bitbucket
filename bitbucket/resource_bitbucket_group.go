@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
-	v1 "github.com/zahiar/terraform-provider-bitbucket/bitbucket/api/v1"
+	v1 "github.com/sovarto/terraform-provider-bitbucket/bitbucket/api/v1"
 )
 
 func resourceBitbucketGroup() *schema.Resource {
