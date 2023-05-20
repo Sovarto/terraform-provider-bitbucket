@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -104,11 +105,13 @@ func resourceBitbucketDeploymentRead(ctx context.Context, resourceData *schema.R
 }
 
 func resourceBitbucketDeploymentReadByNameOrId(ctx context.Context, resourceData *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	if resourceData.Get("name") != nil {
+	id := resourceData.Get("id")
+	if id != nil && id != "" {
 		return resourceBitbucketDeploymentRead(ctx, resourceData, meta)
 	}
 
-	if resourceData.Get("id") != nil {
+	name := resourceData.Get("name")
+	if name != nil && name != "" {
 		return resourceBitbucketDeploymentReadByName(ctx, resourceData, meta)
 	}
 
@@ -116,6 +119,9 @@ func resourceBitbucketDeploymentReadByNameOrId(ctx context.Context, resourceData
 }
 
 func resourceBitbucketDeploymentReadByName(ctx context.Context, resourceData *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	// Artificial sleep due to Bitbucket's API taking time to return newly created deployments
+	time.Sleep(3 * time.Second)
+
 	client := meta.(*Clients).V2
 
 	deployments, err := client.Repositories.Repository.ListEnvironments(
@@ -128,9 +134,11 @@ func resourceBitbucketDeploymentReadByName(ctx context.Context, resourceData *sc
 		return diag.FromErr(fmt.Errorf("unable to get deployment variable with error: %s", err))
 	}
 
+	name := resourceData.Get("name")
+
 	var deployment *gobb.Environment
 	for _, item := range deployments.Environments {
-		if item.Name == resourceData.Get("name").(string) {
+		if item.Name == name.(string) {
 			deployment = &item
 			break
 		}
