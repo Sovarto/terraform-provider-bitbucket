@@ -19,13 +19,14 @@ func TestGroupMembers(t *testing.T) {
 	owner := os.Getenv("BITBUCKET_WORKSPACE")
 
 	t.Run("setup", func(t *testing.T) {
-		group, _ = c.Groups.Create(
+		var err error
+		group, err = c.Groups.Create(
 			&GroupOptions{
 				OwnerUuid: owner,
 				Name:      "tf-bb-group-members-test" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum),
 			},
 		)
-		assert.NotNil(t, group, "The Group could not be created")
+		assert.NotNilf(t, group, "The Group could not be created: %s", err)
 	})
 
 	t.Run("create", func(t *testing.T) {

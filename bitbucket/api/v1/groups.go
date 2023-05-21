@@ -47,7 +47,7 @@ func (g *Groups) Get(gro *GroupOptions) (*Group, error) {
 		return nil, fmt.Errorf("response body is nil")
 	}
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("response status code was not 200")
+		return nil, fmt.Errorf("response status code was not 200. Instead, it was %s", response.Status)
 	}
 
 	result := make([]Group, 1)
@@ -85,7 +85,7 @@ func (g *Groups) Create(gro *GroupOptions) (*Group, error) {
 		return nil, fmt.Errorf("response body is nil")
 	}
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("response status code was not 200")
+		return nil, fmt.Errorf("response status code was not 200. Instead, it was %s", response.Status)
 	}
 
 	result := &Group{}
@@ -138,7 +138,7 @@ func (g *Groups) Update(gro *GroupOptions) (*Group, error) {
 		return nil, fmt.Errorf("response body is nil")
 	}
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("response status code was not 200")
+		return nil, fmt.Errorf("response status code was not 200. Instead, it was %s", response.Status)
 	}
 
 	result := &Group{}
