@@ -2,6 +2,7 @@ package bitbucket
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -30,18 +31,22 @@ func testAccPreCheck(t *testing.T) {
 	password := os.Getenv("BITBUCKET_PASSWORD")
 	oauthClientId := os.Getenv("BITBUCKET_OAUTH_CLIENT_ID")
 	oauthClientSecret := os.Getenv("BITBUCKET_OAUTH_CLIENT_SECRET")
-
-	assert.NotEqual(t, "", username, "BITBUCKET_USERNAME must be set for acceptance tests")
-	assert.NotEqual(t, "", password, "BITBUCKET_PASSWORD must be set for acceptance tests")
-	assert.NotEqual(t, "", oauthClientId, "BITBUCKET_OAUTH_CLIENT_ID must be set for acceptance tests")
-	assert.NotEqual(t, "", oauthClientSecret, "BITBUCKET_OAUTH_CLIENT_SECRET must be set for acceptance tests")
-
-	workspace := os.Getenv("BITBUCKET_WORKSPACE")
-	if workspace == "" {
-		os.Setenv("BITBUCKET_WORKSPACE", username)
-	}
 	authMethod := os.Getenv("BITBUCKET_AUTH_METHOD")
-	if authMethod == "" {
-		os.Setenv("BITBUCKET_AUTH_METHOD", "username")
+	workspace := os.Getenv("BITBUCKET_WORKSPACE")
+
+	if strings.EqualFold(authMethod, "oauth") {
+		assert.NotEqual(t, "", oauthClientId, "BITBUCKET_OAUTH_CLIENT_ID must be set for acceptance tests")
+		assert.NotEqual(t, "", oauthClientSecret, "BITBUCKET_OAUTH_CLIENT_SECRET must be set for acceptance tests")
+	} else {
+		assert.NotEqual(t, "", username, "BITBUCKET_USERNAME must be set for acceptance tests")
+		assert.NotEqual(t, "", password, "BITBUCKET_PASSWORD must be set for acceptance tests")
+	}
+
+	if workspace == "" {
+		if username == "" {
+			assert.Fail(t, "Either BITBUCKET_WORKSPACE or BITBUCKET_USERNAME have to be set")
+		} else {
+			os.Setenv("BITBUCKET_WORKSPACE", username)
+		}
 	}
 }
