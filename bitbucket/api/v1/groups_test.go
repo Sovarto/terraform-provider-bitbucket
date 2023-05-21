@@ -18,7 +18,7 @@ func TestGroups(t *testing.T) {
 	var groupResourceSlug string
 
 	name := "tf-bb-group-test" + acctest.RandStringFromCharSet(10, acctest.CharSetAlphaNum)
-	owner := os.Getenv("BITBUCKET_OWNER")
+	owner := os.Getenv("BITBUCKET_WORKSPACE")
 
 	t.Run("create", func(t *testing.T) {
 		opt := &GroupOptions{
@@ -82,7 +82,7 @@ func TestGroupsGracefullyHandleNoReturnedGroupsForInvalidSlug(t *testing.T) {
 	var groupResourceSlug string
 
 	name := "TF-BB-Group-Test"
-	owner := os.Getenv("BITBUCKET_OWNER")
+	owner := os.Getenv("BITBUCKET_WORKSPACE")
 
 	t.Run("create", func(t *testing.T) {
 		opt := &GroupOptions{

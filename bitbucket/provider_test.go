@@ -40,10 +40,6 @@ func testAccPreCheck(t *testing.T) {
 	if workspace == "" {
 		os.Setenv("BITBUCKET_WORKSPACE", username)
 	}
-	owner := os.Getenv("BITBUCKET_OWNER")
-	if owner == "" {
-		os.Setenv("BITBUCKET_OWNER", username)
-	}
 	authMethod := os.Getenv("BITBUCKET_AUTH_METHOD")
 	if authMethod == "" {
 		os.Setenv("BITBUCKET_AUTH_METHOD", "username")

@@ -16,7 +16,7 @@ func TestGroupMembers(t *testing.T) {
 	c := NewClient()
 
 	var group *Group
-	owner := os.Getenv("BITBUCKET_OWNER")
+	owner := os.Getenv("BITBUCKET_WORKSPACE")
 
 	t.Run("setup", func(t *testing.T) {
 		group, _ = c.Groups.Create(
