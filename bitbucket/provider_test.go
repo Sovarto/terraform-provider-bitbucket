@@ -26,15 +26,26 @@ func TestProvider(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
-
 	username := os.Getenv("BITBUCKET_USERNAME")
-	assert.NotEqual(t, "", username, "BITBUCKET_USERNAME must be set for acceptance tests")
-
 	password := os.Getenv("BITBUCKET_PASSWORD")
+	oauthClientId := os.Getenv("BITBUCKET_OAUTH_CLIENT_ID")
+	oauthClientSecret := os.Getenv("BITBUCKET_OAUTH_CLIENT_SECRET")
+
+	assert.NotEqual(t, "", username, "BITBUCKET_USERNAME must be set for acceptance tests")
 	assert.NotEqual(t, "", password, "BITBUCKET_PASSWORD must be set for acceptance tests")
+	assert.NotEqual(t, "", oauthClientId, "BITBUCKET_OAUTH_CLIENT_ID must be set for acceptance tests")
+	assert.NotEqual(t, "", oauthClientSecret, "BITBUCKET_OAUTH_CLIENT_SECRET must be set for acceptance tests")
 
 	workspace := os.Getenv("BITBUCKET_WORKSPACE")
 	if workspace == "" {
 		os.Setenv("BITBUCKET_WORKSPACE", username)
+	}
+	owner := os.Getenv("BITBUCKET_OWNER")
+	if owner == "" {
+		os.Setenv("BITBUCKET_OWNER", username)
+	}
+	authMethod := os.Getenv("BITBUCKET_AUTH_METHOD")
+	if authMethod == "" {
+		os.Setenv("BITBUCKET_AUTH_METHOD", "username")
 	}
 }
