@@ -59,10 +59,7 @@ tests to run, as Bitbucket's API will reject the account owner's UUID.
 * `BITBUCKET_USERNAME` - Username of the account to run the tests against. Optional if `BITBUCKET_AUTH_METHOD` is set to `oauth`.
 * `BITBUCKET_PASSWORD` - App Password of the account to run the tests against. Optional if `BITBUCKET_AUTH_METHOD` is set to `oauth`.
 * `BITBUCKET_MEMBER_ACCOUNT_UUID` - Account UUID of the member who is part of your account
-* `BITBUCKET_OAUTH_CLIENT_ID` - The "Key" from an [OAuth consumer](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/). Make sure to mark it as private.
-* `BITBUCKET_OAUTH_CLIENT_SECRET` - The "Secret" from the OAuth consumer.
-* `BITBUCKET_AUTH_METHOD` - If set to `oauth`, it will use the OAuth credentials for all operations, otherwise the username and password. In any case, the OAuth credentials are required for the `NewOAuthClient` test
-* `BITBUCKET_WORKSPACE` - Set this, if the workspace name differs from the username or if you haven't set `BITBUCKET_USERNAME`.
+* `BITBUCKET_WORKSPACE` - Set this, if the workspace name differs from the username.
 
 **NOTE**: `BITBUCKET_PASSWORD` must be an [app password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/). If you use the account password, some tests will fail
 **NOTE**: if a test fails, it may leave dangling resources in your account so please bear this in mind.
