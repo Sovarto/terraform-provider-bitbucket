@@ -1,10 +1,12 @@
 package bitbucket
 
 import (
+	"context"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,6 +21,13 @@ func init() {
 	}
 
 	testAccProvider = Provider()
+	original := testAccProvider.ConfigureContextFunc
+	testAccProvider.ConfigureContextFunc = func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		if strings.EqualFold(os.Getenv("BITBUCKET_AUTH_METHOD"), "oauth") {
+			d.Set("password", "") // Delete the password to ensure the provider logic picks OAuth for authentication
+		}
+		return original(ctx, d)
+	}
 	testAccProviders = map[string]func() (*schema.Provider, error){
 		"bitbucket": func() (*schema.Provider, error) {
 			return testAccProvider, nil
@@ -37,7 +46,6 @@ func testAccPreCheck(t *testing.T) {
 	oauthClientId := os.Getenv("BITBUCKET_OAUTH_CLIENT_ID")
 	oauthClientSecret := os.Getenv("BITBUCKET_OAUTH_CLIENT_SECRET")
 	authMethod := os.Getenv("BITBUCKET_AUTH_METHOD")
-	workspace := os.Getenv("BITBUCKET_WORKSPACE")
 
 	if strings.EqualFold(authMethod, "oauth") {
 		assert.NotEqual(t, "", oauthClientId, "BITBUCKET_OAUTH_CLIENT_ID must be set for acceptance tests")
@@ -45,13 +53,5 @@ func testAccPreCheck(t *testing.T) {
 	} else {
 		assert.NotEqual(t, "", username, "BITBUCKET_USERNAME must be set for acceptance tests")
 		assert.NotEqual(t, "", password, "BITBUCKET_PASSWORD must be set for acceptance tests")
-	}
-
-	if workspace == "" {
-		if username == "" {
-			assert.Fail(t, "Either BITBUCKET_WORKSPACE or BITBUCKET_USERNAME have to be set")
-		} else {
-			os.Setenv("BITBUCKET_WORKSPACE", username)
-		}
 	}
 }

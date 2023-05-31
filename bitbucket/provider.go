@@ -93,7 +93,13 @@ func configureProvider(ctx context.Context, resourceData *schema.ResourceData) (
 	var client *gobb.Client
 	var v1Client *v1.Client
 
-	if username != "" && password == "" {
+	if username != "" && password != "" {
+		client = gobb.NewBasicAuth(username, password)
+		v1Client = v1.NewBasicAuthClient(username, password)
+	} else if oauthClientId != "" && oauthClientSecret != "" {
+		client = gobb.NewOAuthClientCredentials(oauthClientId, oauthClientSecret)
+		v1Client = v1.NewOAuthClient(oauthClientId, oauthClientSecret)
+	} else if username != "" && password == "" {
 		diag.Errorf("`username` is set but `password` is not.")
 	} else if username == "" && password != "" {
 		diag.Errorf("`password` is set but `username` is not.")
@@ -101,12 +107,6 @@ func configureProvider(ctx context.Context, resourceData *schema.ResourceData) (
 		diag.Errorf("`oauth_client_id` is set but `oauth_client_secret` is not.")
 	} else if oauthClientId == "" && oauthClientSecret != "" {
 		diag.Errorf("`oauth_client_secret` is set but `oauth_client_id` is not.")
-	} else if username != "" && password != "" {
-		client = gobb.NewBasicAuth(username, password)
-		v1Client = v1.NewBasicAuthClient(username, password)
-	} else if oauthClientId != "" && oauthClientSecret != "" {
-		client = gobb.NewOAuthClientCredentials(oauthClientId, oauthClientSecret)
-		v1Client = v1.NewOAuthClient(oauthClientId, oauthClientSecret)
 	} else {
 		diag.Errorf("Either `username` and `password` or `oauth_client_id` and `oauth_client_secret` need to be set for acceptance tests")
 	}
