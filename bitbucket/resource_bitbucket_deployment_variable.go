@@ -92,21 +92,35 @@ func resourceBitbucketDeploymentVariableRead(ctx context.Context, resourceData *
 	// Artificial sleep due to Bitbucket's API taking time to return newly created variables :(
 	time.Sleep(7 * time.Second)
 
-	deploymentVariables, err := client.Repositories.Repository.ListDeploymentVariables(
-		&gobb.RepositoryDeploymentVariablesOptions{
-			Owner:       resourceData.Get("workspace").(string),
-			RepoSlug:    resourceData.Get("repository").(string),
-			Environment: &gobb.Environment{Uuid: resourceData.Get("deployment").(string)},
-			Pagelen:     1000, // Bitbucket's API doesn't support querying, so we have to get as many variables as possible in one go and loop over :(
-			Query:       resourceData.Get("key").(string),
-		},
-	)
-	if err != nil {
-		return diag.FromErr(fmt.Errorf("unable to get deployment variable with error: %s", err))
+	var deploymentVariables []gobb.DeploymentVariable
+	var newDeploymentVariables *gobb.DeploymentVariables
+	var page int = 1
+	var err error
+
+	for {
+		newDeploymentVariables, err = client.Repositories.Repository.ListDeploymentVariables(
+			&gobb.RepositoryDeploymentVariablesOptions{
+				Owner:       resourceData.Get("workspace").(string),
+				RepoSlug:    resourceData.Get("repository").(string),
+				Environment: &gobb.Environment{Uuid: resourceData.Get("deployment").(string)},
+				Pagelen:     100, // Bitbucket's API doesn't support querying, so we have to get as many variables as possible in one go and loop over :(
+				PageNum:     page,
+			},
+		)
+		if err != nil {
+			return diag.FromErr(fmt.Errorf("unable to get deployment variable with error: %s", err))
+		}
+
+		if len(newDeploymentVariables.Variables) == 0 {
+			break
+		}
+
+		deploymentVariables = append(deploymentVariables, newDeploymentVariables.Variables...)
+		page++
 	}
 
 	var deploymentVariable *gobb.DeploymentVariable
-	for _, deploymentVar := range deploymentVariables.Variables {
+	for _, deploymentVar := range deploymentVariables {
 		if deploymentVar.Key == resourceData.Get("key").(string) {
 			deploymentVariable = &deploymentVar
 			break
