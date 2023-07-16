@@ -131,7 +131,7 @@ func resourceBitbucketDeploymentReadByName(ctx context.Context, resourceData *sc
 		},
 	)
 	if err != nil {
-		return diag.FromErr(fmt.Errorf("unable to get deployment variable with error: %s", err))
+		return diag.FromErr(fmt.Errorf("unable to get deployment with error: %s", err))
 	}
 
 	name := resourceData.Get("name").(string)
