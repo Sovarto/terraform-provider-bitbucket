@@ -98,6 +98,7 @@ func resourceBitbucketDeploymentVariableRead(ctx context.Context, resourceData *
 			RepoSlug:    resourceData.Get("repository").(string),
 			Environment: &gobb.Environment{Uuid: resourceData.Get("deployment").(string)},
 			Pagelen:     1000, // Bitbucket's API doesn't support querying, so we have to get as many variables as possible in one go and loop over :(
+			Query:       resourceData.Get("key").(string),
 		},
 	)
 	if err != nil {
